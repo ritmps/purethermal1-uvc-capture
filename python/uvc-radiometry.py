@@ -91,7 +91,8 @@ def main():
       libuvc.uvc_get_stream_ctrl_format_size(devh, byref(ctrl), UVC_FRAME_FORMAT_Y16,
         frame_formats[0].wWidth, frame_formats[0].wHeight, int(1e7 / frame_formats[0].dwDefaultFrameInterval)
       )
-
+      set_gain_low(devh)
+      
       res = libuvc.uvc_start_streaming(devh, byref(ctrl), PTR_PY_FRAME_CALLBACK, None, 0)
       if res < 0:
         print("uvc_start_streaming failed: {0}".format(res))
@@ -108,7 +109,11 @@ def main():
           display_temperature(img, minVal, minLoc, (255, 0, 0))
           display_temperature(img, maxVal, maxLoc, (0, 0, 255))
           cv2.imshow('Lepton Radiometry', img)
-          cv2.waitKey(1)
+          
+          k = cv2.waitKey(1) & 0xFF
+          if k == ord('q') or k == 27:
+            print("exiting...")
+            break
 
         cv2.destroyAllWindows()
       finally:
