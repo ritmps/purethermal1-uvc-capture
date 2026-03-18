@@ -3,3 +3,5 @@ config.*
 stamp-h1
 libtool
 *.o
+\#*\#
+__pycache__
