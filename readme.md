@@ -83,7 +83,22 @@ Note that in order for the telemetry features to work, you'll need to have the P
 
 ## Python (OS X, Windows, Linux)
 
-    cd python
+### fp notes -
+
+Not sure if relevant, but I needed to build the `groupgets/libuvc` library from source to get this to work properly.
+
+Also, I needed to create some rules to allow access on Linux.
+
+```
+cd /etc/udev/rules.d
+cat <<EOT > 99-purethermal.rules
+SUBSYSTEM=="usb", ATTRS{idVendor}=="1e4e", ATTRS{idProduct}=="0100", MODE="0666"
+EOT
+sudo udevadm control --reload-rules
+```
+
+Plug-replug.
+
 
 ### opencv-capture.py
 

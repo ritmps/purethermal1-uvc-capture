@@ -167,6 +167,42 @@ def call_extension_unit(devh, unit, control, data, size):
 def set_extension_unit(devh, unit, control, data, size):
   return libuvc.uvc_set_ctrl(devh, unit, control, data, size, 0x81)
 
+def set_gain_low(devh):
+    # 1 = LOW GAIN mode (0 is HIGH, 2 is AUTO)
+    gain_mode = c_uint32(1)
+    
+    # SYS_UNIT_ID is the Lepton System module. 19 is the translated UVC Control ID.
+    # We are sending 4 bytes of data.
+    return set_extension_unit(devh, SYS_UNIT_ID, 19, byref(gain_mode), 4)
+
+def set_gain_high(devh):
+    # 0 = High, 1 = Low, 2 = Auto
+    gain_mode = c_uint32(0)  
+    # Command 0x0248 (SYS Gain Mode). Maps to UVC Control ID 19.
+    res = set_extension_unit(devh, SYS_UNIT_ID, 19, byref(gain_mode), 4)
+    if res >= 0:
+        print("Success: Forced High Gain Mode!")
+    return res
+
+def trigger_ffc(devh):
+    # Command 0x023C (SYS Run FFC). Maps to UVC Control ID 16.
+    # UVC 'Run' commands just require a 1-byte payload to trigger.
+    action = c_uint8(1)
+    res = set_extension_unit(devh, SYS_UNIT_ID, 16, byref(action), 1)
+    if res >= 0:
+        print("Success: Startup FFC shutter triggered!")
+    return res
+
+
+def disable_telemetry(devh):
+    # Command 0x0218 (SYS Telemetry Enable State). Maps to UVC Control ID 7.
+    # 0 = Disable, 1 = Enable
+    state = c_uint32(0)
+    res = set_extension_unit(devh, SYS_UNIT_ID, 7, byref(state), 4)
+    if res >= 0:
+        print("Success: Telemetry disabled (160x120 shape enforced)!")
+    return res
+  
 PT_USB_VID = 0x1e4e
 PT_USB_PID = 0x0100
 
